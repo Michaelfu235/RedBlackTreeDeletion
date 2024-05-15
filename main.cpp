@@ -45,6 +45,9 @@ Node* rotateRight(Node* node);
 Node* add(Node* &root, int data, bool &LL, bool &RR, bool &LR, bool &RL, Node* &actualRoot);
 //void checkTree(Node* &root, Node* &nnode);
 int searchhh(Node* root, int searchNum);
+Node* findNode(Node* root, int data);
+Node* nextValue(Node* root);
+Node* deleet(Node* &realRoot, Node* startNode, int deleteNum);
 
 
 
@@ -288,4 +291,122 @@ int searchhh(Node* root, int searchNum){
   }
 
   return -1;
+}
+
+
+
+Node* findNode(Node* root, int data){
+  Node* node = root;
+  while (node != NULL) {
+    if (node->data > data) { //go left
+      node = node->left;
+    } else if (node->data < data) { //go right
+      node = node->right;
+    } else if (node->data == data) {
+      return node;
+    }
+  }
+  return NULL;
+}
+
+Node* nextValue(Node* root){
+  Node* current = root;
+  while(current != NULL && current->left != NULL){
+    current = current->left;
+  }
+
+  return current;
+}
+
+
+
+Node* deleet(Node* &realRoot, Node* startNode, int deleteNum){
+
+  bool dB;
+
+  if(realRoot == NULL){
+    return realRoot;
+  } else if (realRoot->left == NULL && realRoot->right == NULL){
+    return NULL;
+  } else {
+    Node* root = findNode(startNode, deleteNum);
+
+    if(root->left == NULL && root->right == NULL){
+      if(root->color == 'B'){
+	root->data = 0;
+	checkDelete(realRoot, root);
+      }
+      if(root->parent->left == root){
+	root->parent->left = NULL;
+      } else {
+	root->parent->right = NULL;
+      }
+      delete root;
+      return realRoot;
+    }
+
+    else if(root->left == NULL){
+      Node* temp = root->right;
+      if(root->color == 'R' || root->right->color == 'R'){
+	temp->color = 'B';
+      } else if(root->right == NULL || root->right->color == 'B'){
+	dB = true;
+      }
+
+      if(root->parent != NULL){
+	if(root->parent->right == root){
+	  root->parent->right = temp;
+	} else {
+	  root->parent->left = temp;
+	}
+	temp->parent = root->parent;
+      }
+      else {
+	realRoot = temp;
+      }
+      delete root;
+
+      if(dB){
+	checkDelete(realRoot, temp);
+      }
+    } else if (root->right == NULL){
+      Node* temp = root->left;
+      if(root->color == 'R' || root->left->color == 'R'){
+	temp->color = 'B';
+      } else if(root->left == NULL || root->left->color == 'B'){
+	dB = true;
+      }
+      
+      if(root->parent != NULL){
+	if(root->parent->right == root){
+	  root->parent->right = temp;
+	} else {
+	  root->parent->left = temp;
+	}
+	temp->parent = root->parent;
+      }
+      else{
+	realRoot = temp;
+      }
+      delete root;
+
+      if(dB){
+	checkDelete(realRoot, temp);
+      }
+
+      
+      
+
+      
+    }
+    else{
+      Node* temp = nextValue(root->right);
+      root->data = temp->data;
+      deleet(realRoot, root->right, temp->data);
+      return realRoot;
+    }
+  }
+
+  return realRoot;
+  
 }
