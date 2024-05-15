@@ -44,6 +44,8 @@ Node* rotateRight(Node* node);
 //void rotateRight(Node* &root, Node* &node);
 Node* add(Node* &root, int data, bool &LL, bool &RR, bool &LR, bool &RL, Node* &actualRoot);
 //void checkTree(Node* &root, Node* &nnode);
+int searchhh(Node* root, int searchNum);
+
 
 
 int main(){
@@ -98,6 +100,16 @@ int main(){
 	  }
 	}
       }
+    } else if (strcmp(inputt, "S")==0){
+      cout << "what number do you want to find?" << endl;
+      int searchNum;
+      cin >> searchNum;
+      int found = searchhh(root, searchNum);
+      if(found == searchNum){
+	cout << searchNum << " exists in the tree" << endl;
+      } else {
+	cout << searchNum << " does not exist in the tree" << endl;
+      }
     } else if (strcmp(inputt, "P")==0){
       printTree(root, 0, 0);
     } else if (strcmp(inputt, "Q")==0){
@@ -137,25 +149,6 @@ void printTree(Node* tree, int depth, int fromwhere){
     
 }
 
-/* unused function (completely wrong or smth) (keeping in case of debugging)
-void rotateLeft(Node* &root, Node* &node){
-  Node* y = node->right;
-  node->right = y->left;
-  if(node->right != NULL){
-    node->right->parent = node;
-  }
-  y->parent = node->parent;
-
-  if(node->parent == NULL){
-    root = y;
-  } else if (node == node->parent->left){
-    node->parent->left = y;
-  } else {
-    node->parent->right = y;
-  }
-  y->left = node;
-  node->parent = y;
-  }*/
 
 Node* rotateLeft(Node* node) {
   Node* x = node->right;
@@ -179,26 +172,6 @@ Node* rotateRight(Node* node){
   }
   return x;
 }
-
-/*unused function (compeltely wrong or smth) (keeping in case of debugging)
-void rotateRight(Node* &root, Node* &node){
-  Node* y = node->left;
-  node->left = y->right;
-  if(node->left != NULL){
-    node->left->parent = node;
-    
-  }
-  y->parent = node->parent;
-  if(node->parent == NULL){
-    root = y;
-  } else if (node == node->parent->left){
-    node->parent->left = y;
-  } else {
-    node->parent->right = y;
-  }
-  y->right = node;
-  node->parent = y;
-  }*/
 
 
 //add function that checks the tree inside the add function
@@ -295,83 +268,24 @@ Node* add(Node* &root, int data, bool &LL, bool &RR, bool &LR, bool &RL, Node* &
   }
   return root;
 
-
-  //previous version that didnt work (keeping it in case of debugging)
-  /*/Node* temp = root->left;
-      //return add (temp, data, LL, RR, LR, RL);
-    } else if (data < root->data && root->left == NULL){
-      Node* newNode = new Node(data);
-      root->left = newNode;
-      newNode->parent = root;
-      return newNode;
-    }
-
-    if(data > root->data && root->right != NULL){
-      Node* temp = root->right;
-      return add(temp, data, LL, RR, LR, RL);
-    } else if (data > root->data && root->right == NULL){
-      Node* newNode = new Node(data);
-      root->right = newNode;
-      newNode->parent = root;
-      return newNode;
-    }
-    /*if (data < root->data && root->left == NULL){
-    Node* newNode = new Node(data);
-    root->left = newNode;
-    newNode->parent = root;
-    return newNode;*/
   
 }
 
-/*
-void checkTree(Node* &root, Node* &nnode){
-  Node* parent = NULL;
-  Node* grandpa = NULL;
-  Node* uncle = NULL;
 
-  while((nnode != root) && (nnode->color == 'R') && (nnode->parent->color=='R')){
-    parent = nnode->parent;
-    grandpa = parent->parent;
-    if(parent == grandpa->left){
-      uncle = grandpa->right;
-      if(uncle != NULL && uncle->color == 'R'){
-	grandpa->color = 'R';
-	parent->color = 'B';
-	uncle->color = 'B';
-	nnode = grandpa;
-      } else {
-	if(nnode == parent->right){
-	  //rotateLeft(root, parent);
-	  nnode = parent;
-	  parent = nnode->parent;
-	}
-	//rotateRight(root, grandpa);
-	parent->color = 'B';
-	grandpa->color = 'R';
-	nnode = parent;
-      }
-      
-    }
-    else {
-      uncle = grandpa->left;
-      if(uncle != NULL && uncle->color == 'R'){
-	grandpa->color = 'R';
-	parent->color = 'B';
-	uncle->color = 'B';
-	nnode = grandpa;
-      }
-      else {
-	if(nnode == parent->left){
-	  //rotateRight(root, parent);
-	  nnode = parent;
-	  parent = nnode->parent;
-	}
-	//rotateLeft(root, grandpa);
-	parent->color = 'B';
-	grandpa->color = 'R';
-	nnode = parent;
-      }
-    }
+
+
+int searchhh(Node* root, int searchNum){
+  if(root == NULL){
+    return -1;
+  } else if (root->data == searchNum){
+    return root->data;
   }
-  root->color = 'B';
-  }*/
+
+  if(root->data < searchNum){
+    return searchhh(root->right, searchNum);
+  } else if (root->data > searchNum){
+    return searchhh(root->left, searchNum);
+  }
+
+  return -1;
+}
