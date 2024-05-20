@@ -48,7 +48,7 @@ int searchhh(Node* root, int searchNum);
 Node* findNode(Node* root, int data);
 Node* nextValue(Node* root);
 Node* deleet(Node* &realRoot, Node* startNode, int deleteNum);
-
+void checkDelete(Node* &root, Node* &node);
 
 
 int main(){
@@ -112,6 +112,16 @@ int main(){
 	cout << searchNum << " exists in the tree" << endl;
       } else {
 	cout << searchNum << " does not exist in the tree" << endl;
+      }
+    } else if (strcmp(inputt, "D")==0){
+      cout << "num to delete?" << endl;
+      int deleteNum;
+      cin >> deleteNum;
+      int found = searchhh(root, deleteNum);
+      if(found == deleteNum){
+	root = deleet(root, root, deleteNum);
+      } else {
+	cout << deleteNum << " does not exist in the tree!" << endl;
       }
     } else if (strcmp(inputt, "P")==0){
       printTree(root, 0, 0);
@@ -343,9 +353,7 @@ Node* deleet(Node* &realRoot, Node* startNode, int deleteNum){
       }
       delete root;
       return realRoot;
-    }
-
-    else if(root->left == NULL){
+    } else if(root->left == NULL){
       Node* temp = root->right;
       if(root->color == 'R' || root->right->color == 'R'){
 	temp->color = 'B';
@@ -409,4 +417,70 @@ Node* deleet(Node* &realRoot, Node* startNode, int deleteNum){
 
   return realRoot;
   
+}
+
+
+void checkDelete(Node* &root, Node* &node){
+  if(node == root){
+    return;
+  }
+
+  Node* parent = node->parent;
+  Node* sibling = node;
+  if(parent->right == node){
+    sibling = parent->left;
+  } else {
+    sibling = parent->right;
+  }
+
+  if(sibling == NULL){
+    checkDelete(root, parent);
+  } else {
+    if(sibling->color == 'R'){
+      parent->color = 'R';
+      sibling->color = 'B';
+      if(parent->left == sibling){
+	rotateRight(parent);
+      } else {
+	rotateLeft(parent);
+      }
+      checkDelete(root, node);
+    }
+    else {//sibling is black
+      if((sibling->left != NULL && sibling->left->color == 'R') || (sibling->right != NULL && sibling->right->color == 'R')){
+	if(sibling->left != NULL && sibling->left->color == 'R'){
+	  if(parent->left == sibling){
+	    sibling->left->color = sibling->color;
+	    sibling->color = parent->color;
+	    rotateRight(parent);
+	  } else {
+	    sibling->left->color = parent->color;
+	    rotateRight(sibling);
+	    rotateLeft(parent);
+	  }
+	} else {
+	  if(parent->left == sibling){
+	    sibling->right->color = parent->color;
+	    rotateLeft(sibling);
+	    rotateRight(parent);
+	  } else {
+	    sibling->right->color = sibling->color;
+	    sibling->color = parent->color;
+	    rotateLeft(parent);
+	  }
+	}
+	parent->color = 'B';
+	
+      } else {
+	sibling->color = 'R';
+	if(parent->color == 'B'){
+	  checkDelete(root, parent);
+	} else {
+	  parent->color = 'B';
+	}
+      }
+
+      
+    }
+  }
 }
