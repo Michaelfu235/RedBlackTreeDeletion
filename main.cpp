@@ -1,3 +1,7 @@
+//Author: Michael Fu
+//Date: 5/20/2024
+//Description: This program is a red black tree with add, print, search, delete, and quit functions
+
 #include <iostream>
 #include <fstream>
 #include <cstring>
@@ -65,7 +69,7 @@ int main(){
 
   //asking for user input loop with add by file, console, printing tree, and quit
   while(justKeepGoing){
-    cout << "enter a command: ADD(A), PRINT(P), or QUIT(Q)" << endl;
+    cout << "enter a command: ADD(A), PRINT(P), SEARCH(S), DELETE(D), or QUIT(Q) - ";
     cout << "Add by console and file are both in ADD" << endl;
     cin >> inputt;
 
@@ -103,7 +107,8 @@ int main(){
 	  }
 	}
       }
-    } else if (strcmp(inputt, "S")==0){
+      
+    } else if (strcmp(inputt, "S")==0){ //if the user wants to search, ask for the number and call search function. 
       cout << "what number do you want to find?" << endl;
       int searchNum;
       cin >> searchNum;
@@ -113,7 +118,7 @@ int main(){
       } else {
 	cout << searchNum << " does not exist in the tree" << endl;
       }
-    } else if (strcmp(inputt, "D")==0){
+    } else if (strcmp(inputt, "D")==0){ //if the user wants to delete, ask for number and cal delete function
       cout << "num to delete?" << endl;
       int deleteNum;
       cin >> deleteNum;
@@ -286,7 +291,7 @@ Node* add(Node* &root, int data, bool &LL, bool &RR, bool &LR, bool &RL, Node* &
 
 
 
-
+//search for a number and return -1 if it isn't found (same as from binary search tree)
 int searchhh(Node* root, int searchNum){
   if(root == NULL){
     return -1;
@@ -305,6 +310,7 @@ int searchhh(Node* root, int searchNum){
 
 
 
+//function that returns the node pointer that has the data being looked for. 
 Node* findNode(Node* root, int data){
   Node* node = root;
   while (node != NULL) {
@@ -319,6 +325,7 @@ Node* findNode(Node* root, int data){
   return NULL;
 }
 
+//returns the next value 
 Node* nextValue(Node* root){
   Node* current = root;
   while(current != NULL && current->left != NULL){
@@ -334,50 +341,58 @@ Node* deleet(Node* &realRoot, Node* startNode, int deleteNum){
 
   bool dB;
 
-  if(realRoot == NULL){
+  if(realRoot == NULL){ //if there is not root, or root has no children, just return null.
     return realRoot;
   } else if (realRoot->left == NULL && realRoot->right == NULL){
     return NULL;
-  } else {
+  } else {//otherwise:
+    //find the node with findNode function (and for the rest of this function "root" is the node that we're on, and "realRoot" is the actual root of the RB tree
     Node* root = findNode(startNode, deleteNum);
 
+    //if root has no children, set the color of root to B and its data to 0, then call checkDelete function of realRoot, and root
     if(root->left == NULL && root->right == NULL){
       if(root->color == 'B'){
 	root->data = 0;
 	checkDelete(realRoot, root);
       }
-      if(root->parent->left == root){
+      if(root->parent->left == root){//using this if and else statement, remove the parent's pointer to root
 	root->parent->left = NULL;
       } else {
 	root->parent->right = NULL;
       }
+      //then delete root and return realRoot
       delete root;
       return realRoot;
-    } else if(root->left == NULL){
-      Node* temp = root->right;
-      if(root->color == 'R' || root->right->color == 'R'){
+    } else if(root->left == NULL){ //if root has no left child
+
+      Node* temp = root->right;//temporary node
+      
+      if(root->color == 'R' || root->right->color == 'R'){//if root and roots right is a double red, set root->right (temp) to black
 	temp->color = 'B';
-      } else if(root->right == NULL || root->right->color == 'B'){
+      } else if(root->right == NULL || root->right->color == 'B'){ //otherwise, set doubleBlack boolean to true
 	dB = true;
       }
 
-      if(root->parent != NULL){
-	if(root->parent->right == root){
+      if(root->parent != NULL){//if root has a parent (isnt the real root)
+	if(root->parent->right == root){//if root is a right node, set root's parents right pointer to temp
 	  root->parent->right = temp;
 	} else {
-	  root->parent->left = temp;
+	  root->parent->left = temp;//otherwise, set root's parent's left pointer to temp
 	}
+	//set temps parent to roots parent
 	temp->parent = root->parent;
       }
       else {
+	//otherwise, set realRoot to temp
 	realRoot = temp;
       }
+      //finally, delete root
       delete root;
 
-      if(dB){
+      if(dB){//if double black, call check delete function
 	checkDelete(realRoot, temp);
       }
-    } else if (root->right == NULL){
+    } else if (root->right == NULL){//if root has no right node, do everything the same as above, but using roots left node
       Node* temp = root->left;
       if(root->color == 'R' || root->left->color == 'R'){
 	temp->color = 'B';
@@ -407,7 +422,7 @@ Node* deleet(Node* &realRoot, Node* startNode, int deleteNum){
 
       
     }
-    else{
+    else{ //else create temp node with data of nextValue of root->right. then call deleet function again and return realRoot
       Node* temp = nextValue(root->right);
       root->data = temp->data;
       deleet(realRoot, root->right, temp->data);
@@ -420,11 +435,12 @@ Node* deleet(Node* &realRoot, Node* startNode, int deleteNum){
 }
 
 
-void checkDelete(Node* &root, Node* &node){
-  if(node == root){
+void checkDelete(Node* &root, Node* &node){ //check delete function
+  if(node == root){//if node is root, then just return
     return;
   }
 
+  //create a parent and sibling node, and assign sibling to the correct node
   Node* parent = node->parent;
   Node* sibling = node;
   if(parent->right == node){
@@ -433,22 +449,23 @@ void checkDelete(Node* &root, Node* &node){
     sibling = parent->right;
   }
 
-  if(sibling == NULL){
+  if(sibling == NULL){//if sibling is not exist, then call checkDelete again of the parent node
     checkDelete(root, parent);
-  } else {
+  } else {//otherwise, if the sibling is R, set the parent to R and the sibling to B
     if(sibling->color == 'R'){
       parent->color = 'R';
       sibling->color = 'B';
-      if(parent->left == sibling){
+      if(parent->left == sibling){//if the sibling is the left of the parent, rotateright of parent, otherwise, the opposite
 	rotateRight(parent);
       } else {
 	rotateLeft(parent);
       }
+      //then call checkDelete of node again
       checkDelete(root, node);
     }
     else {//sibling is black
-      if((sibling->left != NULL && sibling->left->color == 'R') || (sibling->right != NULL && sibling->right->color == 'R')){
-	if(sibling->left != NULL && sibling->left->color == 'R'){
+      if((sibling->left != NULL && sibling->left->color == 'R') || (sibling->right != NULL && sibling->right->color == 'R')){//if siblings left is R or siblings right is R
+	if(sibling->left != NULL && sibling->left->color == 'R'){//if siblings left is R, then if sibling is the left node, then set siblings left to siblings color, and siblings color to parents color, then rotateRight of parent. otherwise rotateright of sibling, then rotateleft of parent
 	  if(parent->left == sibling){
 	    sibling->left->color = sibling->color;
 	    sibling->color = parent->color;
@@ -458,7 +475,7 @@ void checkDelete(Node* &root, Node* &node){
 	    rotateRight(sibling);
 	    rotateLeft(parent);
 	  }
-	} else {
+	} else {//otherwise, do the same thing but the other way around
 	  if(parent->left == sibling){
 	    sibling->right->color = parent->color;
 	    rotateLeft(sibling);
