@@ -1,7 +1,3 @@
-//Author: Michael Fu
-//Date: 5/20/2024
-//Description: This program is a red black tree with add, print, search, delete, and quit functions
-
 #include <iostream>
 #include <fstream>
 #include <cstring>
@@ -53,7 +49,7 @@ Node* findNode(Node* root, int data);
 Node* nextValue(Node* root);
 Node* deleet(Node* &realRoot, Node* startNode, int deleteNum);
 void checkDelete(Node* &root, Node* &node);
-
+void deleteHelper(Node* &node, int deleteNum);
 
 int main(){
   Node* root = NULL;
@@ -424,8 +420,59 @@ Node* deleet(Node* &realRoot, Node* startNode, int deleteNum){
     }
     else{ //else create temp node with data of nextValue of root->right. then call deleet function again and return realRoot
       Node* temp = nextValue(root->right);
-      root->data = temp->data;
-      deleet(realRoot, root->right, temp->data);
+
+      /*
+      if(root->right->left == NULL && root->right->right != NULL){
+
+	if(root != realRoot){
+	  root->parent->right = root->right;
+	  root->right->parent = root->parent;
+	} else {
+	  realRoot = root->right;
+	  realRoot->left = root->left;
+	  realRoot->right->parent = realRoot;
+	  realRoot->left->parent = realRoot;
+	}
+	  //root->data = root->right->data;
+	//root->right = temp;
+	//	root->right->parent = root;
+	}*/
+      
+      int temptwo = temp->data;
+
+      root->data = temptwo;//temptwo;
+
+      Node* tempthree = root->right;
+      if(tempthree->left != NULL){
+	while(tempthree->left != NULL){
+	  tempthree = tempthree->left;
+	}
+	Node* tempfour = tempthree;
+	tempfour->parent->left = NULL;
+	checkDelete(realRoot, root);
+
+	if(root->right == NULL || root->right->color == 'R'){
+	  checkDelete(realRoot, root->right);
+	}
+	//	checkDelete(realRoot, root->right);
+      } else {
+	root->right = NULL;
+      }
+
+	//deleteHelper(root, temp->data);
+      //DOESNT WORK!!!  JUST MAKE A HELPER FUNCTION THAT GOES THROUGH root->RIGHT AND IF whileloop->left->data = temp->data, THEN SET whileloop->left TO NULL!!!!!!
+      //root->right = deleet(root->right, root->right, temp->data);
+
+      //      realRoot = deleet(realRoot, root->right, temp->data);
+      //checkDelete(realRoot, root->parent);
+
+      
+      //start
+      //temp->parent->left = NULL;
+      //end
+
+      //deleet(realRoot, root->right, temp->data);
+      
       return realRoot;
     }
   }
@@ -500,4 +547,19 @@ void checkDelete(Node* &root, Node* &node){ //check delete function
       
     }
   }
+}
+
+
+
+void deleteHelper(Node* &node, int deleteNum){
+  Node* temp = node->right;
+  if(temp != NULL){
+    while(temp->left != NULL){
+      temp = temp->left;
+    }
+    temp->parent->left = NULL;
+    return;
+  }
+  node->right = NULL;
+  return;
 }
