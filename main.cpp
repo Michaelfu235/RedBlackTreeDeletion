@@ -128,6 +128,59 @@ int main(){
       printTree(root, 0, 0);
     } else if (strcmp(inputt, "Q")==0){
       justKeepGoing = false;
+    } else if(strcmp(inputt, "PPP")==0){
+      rotateRight(root);
+    } else if (strcmp(inputt, "ABC")==0){
+      
+      add(root, 100, LL, RR, LR, RL, root);
+      add(root, 90, LL, RR, LR, RL, root);
+      add(root, 110, LL, RR, LR, RL, root);
+      add(root, 105, LL, RR, LR, RL, root);
+      add(root, 80, LL, RR, LR, RL, root);
+      add(root, 95, LL, RR, LR, RL, root);
+      add(root, 130, LL, RR, LR, RL, root);
+      add(root, 140, LL, RR, LR, RL, root);
+      add(root, 70, LL, RR, LR, RL, root);
+      add(root, 85, LL, RR, LR, RL, root);
+      add(root, 87, LL, RR, LR, RL, root);
+
+      printTree(root, 0, 0);
+      cout << "-------------------------------" << endl;
+      root = deleet(root, root, 90);
+      printTree(root, 0, 0);
+      cout << "-------------------------------" << endl;
+      root = deleet(root, root, 87);
+      printTree(root, 0, 0);
+      cout << "-------------------------------" << endl;
+      
+      add(root, 84, LL, RR, LR, RL, root);
+      add(root, 83, LL, RR, LR, RL, root);
+
+      printTree(root, 0, 0);
+      cout << "-------------------------------" << endl;
+
+      cout << root->right->right->right->parent->left << endl;
+      root = deleet(root, root, 140);
+
+      printTree(root, 0, 0);
+
+      cout << root->right->data << " " << root->left->data << endl;
+      cout << "aoeugbaoeugbaoeubgaouegbeg" << endl;
+      cout << root->right->right->right << endl;
+      cout << root->right->right->left << endl;
+      cout << root->right->right->parent->left->data << endl;
+      cout << (root->right->right->right==NULL) << endl;
+      cout << (root->right->right->left == NULL) << endl;
+      
+      cout << "-------------------------------" << endl;
+      root = deleet(root, root, 130);
+      
+      printTree(root, 0, 0);
+      cout << "-------------------------------" << endl;
+
+      //add(root, inpit, LL, RR, LR, RL, root);
+
+
     }
   }
 
@@ -347,10 +400,19 @@ Node* deleet(Node* &realRoot, Node* startNode, int deleteNum){
 
     //if root has no children, set the color of root to B and its data to 0, then call checkDelete function of realRoot, and root
     if(root->left == NULL && root->right == NULL){
-      if(root->color == 'B'){
-	root->data = 0;
+      if(root->color == 'B' && root->parent->color == 'R'){
+	root->parent->color = 'B';
 	checkDelete(realRoot, root);
+      } else if(root->color == 'B' && root->parent->color == 'B'){
+	checkDelete(realRoot, root->parent);
       }
+	/* else if (root->color == 'B' && root->parent->color == 'B' && root->left != NULL && root->right != NULL){
+	rotateRight(root);
+      }
+      /*if(root->color == 'B'){
+	root->data = 0;
+		checkDelete(realRoot, root);
+		}*/
       if(root->parent->left == root){//using this if and else statement, remove the parent's pointer to root
 	root->parent->left = NULL;
       } else {
@@ -419,6 +481,7 @@ Node* deleet(Node* &realRoot, Node* startNode, int deleteNum){
       
     }
     else{ //else create temp node with data of nextValue of root->right. then call deleet function again and return realRoot
+      cout << "here" << endl;
       Node* temp = nextValue(root->right);
 
       /*
@@ -447,32 +510,20 @@ Node* deleet(Node* &realRoot, Node* startNode, int deleteNum){
 	while(tempthree->left != NULL){
 	  tempthree = tempthree->left;
 	}
-	Node* tempfour = tempthree;
-	tempfour->parent->left = NULL;
+	//Node* tempfour = tempthree;
+	tempthree->parent->left = NULL;
 	checkDelete(realRoot, root);
-
+	/*
 	if(root->right == NULL || root->right->color == 'R'){
 	  checkDelete(realRoot, root->right);
-	}
-	//	checkDelete(realRoot, root->right);
+	}*/
+	//checkDelete(realRoot, root->right);
       } else {
 	root->right = NULL;
       }
-
-	//deleteHelper(root, temp->data);
-      //DOESNT WORK!!!  JUST MAKE A HELPER FUNCTION THAT GOES THROUGH root->RIGHT AND IF whileloop->left->data = temp->data, THEN SET whileloop->left TO NULL!!!!!!
-      //root->right = deleet(root->right, root->right, temp->data);
-
-      //      realRoot = deleet(realRoot, root->right, temp->data);
-      //checkDelete(realRoot, root->parent);
-
+      //delete tempthree;
       
-      //start
-      //temp->parent->left = NULL;
-      //end
 
-      //deleet(realRoot, root->right, temp->data);
-      
       return realRoot;
     }
   }
