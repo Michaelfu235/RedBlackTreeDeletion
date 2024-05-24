@@ -481,7 +481,7 @@ Node* deleet(Node* &realRoot, Node* startNode, int deleteNum){
       
     }
     else{ //else create temp node with data of nextValue of root->right. then call deleet function again and return realRoot
-      cout << "here" << endl;
+      //cout << "here" << endl;
       Node* temp = nextValue(root->right);
 
       /*
@@ -513,14 +513,16 @@ Node* deleet(Node* &realRoot, Node* startNode, int deleteNum){
 	//Node* tempfour = tempthree;
 	tempthree->parent->left = NULL;
 	checkDelete(realRoot, root);
-	/*
+	
 	if(root->right == NULL || root->right->color == 'R'){
 	  checkDelete(realRoot, root->right);
-	}*/
+	}
 	//checkDelete(realRoot, root->right);
       } else {
 	root->right = NULL;
       }
+
+      root = rotateRight(root);
       //delete tempthree;
       
 
